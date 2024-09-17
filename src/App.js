@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrophone, faImage, faPaperPlane, faBars, faSearch } from '@fortawesome/free-solid-svg-icons';
 
@@ -13,24 +14,28 @@ function App() {
 
   const handleSendMessage = () => {
     if (input.trim() !== '') {
-      // Replace with placeholder function
-      simulateBackendResponse(input);
+
+      const userQuery = {
+        'contents': input
+      }
+
+      axios.post("https://google-label-reader-backend.vercel.app/api/generate", userQuery).then((response) => {
+        setMessages([...messages, { 'from': 'user', 'text': input }, { from: 'bot', text: response }]);
+        console.log(response);
+      })
+      .catch(error => {
+        setMessages([...messages, { 'from': 'user', 'text': input }, { from: 'bot', text: 'error' }]);
+        console.error(error);
+      });
       setInput('');
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
+      console.log('enter');
       handleSendMessage();
     }
-  };
-
-  const simulateBackendResponse = (userInput) => {
-    // Simulate a response from the backend
-    const simulatedResponse = `Received your message: ${userInput}`;
-    
-    // Update messages state
-    setMessages([...messages, { from: 'user', text: userInput }, { from: 'bot', text: simulatedResponse }]);
   };
 
   const handleVoiceInput = () => {
@@ -83,7 +88,7 @@ function App() {
             type="text"
             value={input}
             onChange={handleInputChange}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder="Type a message..."
             className="chat-input"
           />
