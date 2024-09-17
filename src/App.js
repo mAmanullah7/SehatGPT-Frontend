@@ -20,7 +20,10 @@ function App() {
       }
 
       axios.post("https://google-label-reader-backend.vercel.app/api/generate", userQuery).then((response) => {
-        setMessages([...messages, { 'from': 'user', 'text': input }, { from: 'bot', text: response }]);
+        response = response.data;
+        // To see the string data of the object, don't remove the below comment
+        // response = JSON.parse(response);
+        setMessages([...messages, { 'from': 'user', 'text': input }, { 'from': 'bot', text: response }]);
         console.log(response);
       })
       .catch(error => {
@@ -76,8 +79,10 @@ function App() {
           {messages.map((message, index) => (
             <div
               key={index}
-              className="chat-message"
-              style={{ textAlign: message.from === 'user' ? 'right' : 'left', backgroundColor: message.from === 'user' ? '#e1f5fe' : '#d1ffd6' }}
+              className={`chat-message ${ message.from === 'user' ? 'right':'left'}` }
+              style={{  
+                backgroundColor: message.from === 'user' ? '#e1f5fe' : '#d1ffd6',
+                 }}
             >
               {message.text}
             </div>
